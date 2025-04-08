@@ -1,35 +1,38 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class dbConnect {
-    private static final String URL = "jdbc:mysql://localhost:3306/spicy_noodle_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "123456"; // thay đổi tùy theo db password
+    String url = "jdbc:sqlserver://localhost:1433;databaseName=spicy_noodle_db;encrypt=true;trustServerCertificate=true";
+    String user = "sa"; 
+    String password = "123456"; 
 
-    private Connection conn;
-    
-    public Connection getConnection() {
+
+
+    public dbConnect() {
+        // Constructor
+    }
+    public void getConnection() {
         try {
-            if (conn == null || conn.isClosed()) {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                conn = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Connected to the database");
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Connection conn = DriverManager.getConnection(url, user, password);
+            if (conn != null) {
+                System.out.println("Connected to the database!");
+            } else {
+                System.out.println("Failed to make connection!");
             }
-            return conn;
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Database connection error: " + e.getMessage());
-            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void closeConnection() {
-        if (conn != null) {
-            try {
+    public void disconnect() {
+        try {
+            Connection conn = DriverManager.getConnection(url, user, password);
+            if (conn != null && !conn.isClosed()) {
                 conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error closing connection: " + e.getMessage());
+                System.out.println("Disconnected successfully!");
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
